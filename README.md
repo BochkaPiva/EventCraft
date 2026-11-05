@@ -27,6 +27,7 @@ EventCraft — рабочее название. Самостоятельный �
 - [Комплектации, клиентский выбор и правки](docs/research/CONTENT_CHOICES_AND_REVISIONS.md)
 - [Преимущество перед презентацией: конкретные взаимодействия](docs/research/PRODUCT_ADVANTAGES_AND_EDITOR_INTERACTIONS.md)
 - [Редактируемые блоки и совместная работа с клиентом](docs/research/CLIENT_COLLABORATION.md)
+- [Разбор по ролям заказчика и агентства](docs/research/CUSTOMER_AGENCY_DIALOGUE.md)
 - [Мысленный проход по ролям и исправления концепции](docs/research/COGNITIVE_WALKTHROUGH_2026_11_05.md)
 - [Сквозной пример: тимбилдинг без площадки](docs/research/OUTDOOR_FIRST_SESSION.md)
 - [Российский контур данных и вопросы безопасности](docs/research/RUSSIAN_DATA_CONTOUR.md)

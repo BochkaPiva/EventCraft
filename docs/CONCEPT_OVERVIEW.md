@@ -49,6 +49,7 @@
 - [Правила редактора: композиции, отмена и пространственные действия](research/EDITOR_INTERACTION_CONTRACT.md).
 - [Проверка редактора: задания менеджеру и заказчику](research/EDITOR_VALIDATION_PLAN.md).
 - [Редактируемые блоки и совместная работа с заказчиком](research/CLIENT_COLLABORATION.md).
+- [Разбор по ролям: заказчик и агентство, спорные места клиентского пути](research/CUSTOMER_AGENCY_DIALOGUE.md).
 - [Мысленное тестирование ролей: слабые места и исправления](research/COGNITIVE_WALKTHROUGH_2026_11_05.md).
 - [Конкретный сценарий: тимбилдинг без площадки и последующие изменения](research/OUTDOOR_FIRST_SESSION.md).
 - [Разные форматы мероприятий](research/EVENT_FORMATS.md).
