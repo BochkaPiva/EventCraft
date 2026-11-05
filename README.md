@@ -15,6 +15,8 @@ EventCraft — рабочее название. Самостоятельный �
 - [Атлас 84 сценариев жизненного цикла](docs/research/SCENARIO_ATLAS.md)
 - [Общие решения и шесть сквозных потоков](docs/research/LIFECYCLE_AND_UNIFIED_FLOWS.md)
 - [Стресс-сценарии: бюджет, площадка, передача и выгрузки](docs/research/CROSS_LIFECYCLE_STRESS_CASES.md)
+- [Правила взаимодействия с основным редактором](docs/research/EDITOR_INTERACTION_CONTRACT.md)
+- [Задания для проверки редактора и клиентского пути](docs/research/EDITOR_VALIDATION_PLAN.md)
 - [Продукт, MVP и первый технический пилот](docs/discovery/PRODUCT_BRIEF.md)
 - [Брендинг, шаблоны и самостоятельная настройка КП](docs/discovery/BRANDING_AND_TEMPLATES.md)
 - [Архитектура, инфраструктура и оценка нагрузки](docs/discovery/TECHNICAL_DIRECTION.md)
