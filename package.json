@@ -1,0 +1,32 @@
+{
+  "name": "eventcraft",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.14.1 <25"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@eventcraft/web",
+    "build": "npm run build --workspace=@eventcraft/web",
+    "start": "npm run start --workspace=@eventcraft/web",
+    "typecheck": "npm run typegen --workspace=@eventcraft/web && tsc --noEmit -p packages/core/tsconfig.json && tsc --noEmit -p apps/web/tsconfig.json",
+    "test": "tsx --test packages/core/tests/*.test.ts tests/database/*.test.ts apps/web/tests/*.test.ts",
+    "test:core": "tsx --test packages/core/tests/*.test.ts",
+    "test:db": "tsx --test tests/database/*.test.ts",
+    "test:prototype": "npm --prefix prototype test",
+    "smoke:unconfigured": "node scripts/smoke-unconfigured.mjs",
+    "db:cli": "supabase"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.15",
+    "@types/node": "26.6.6",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "supabase": "3.0.0"
+  }
+}

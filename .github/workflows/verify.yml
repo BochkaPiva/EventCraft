@@ -1,0 +1,65 @@
+name: Verify
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  mvp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.14.1
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+      - name: Verify closed standalone runtime
+        shell: bash
+        env:
+          SUPABASE_URL: ""
+          SUPABASE_PUBLISHABLE_KEY: ""
+          APP_ORIGIN: http://127.0.0.1:3000
+          HOSTNAME: 127.0.0.1
+          PORT: "3000"
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: |
+          cp -R apps/web/public apps/web/.next/standalone/apps/web/public
+          cp -R apps/web/.next/static apps/web/.next/standalone/apps/web/.next/static
+          node apps/web/.next/standalone/apps/web/server.js > "$RUNNER_TEMP/eventcraft-runtime.log" 2>&1 &
+          runtime_pid=$!
+          trap 'kill "$runtime_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..20}; do
+            if curl --max-time 1 -fsS http://127.0.0.1:3000/api/health > /dev/null 2>&1; then
+              break
+            fi
+            sleep 1
+          done
+          npm run smoke:unconfigured
+
+  prototype:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: prototype
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.14.1
+          cache: npm
+          cache-dependency-path: prototype/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:sites
+      - run: npm run build

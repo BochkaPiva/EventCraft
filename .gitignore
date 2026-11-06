@@ -13,6 +13,12 @@ dist/
 coverage/
 *.tsbuildinfo
 .vercel/
+.supabase/
+supabase/.temp/
+supabase/.branches/
+.turbo/
+playwright-report/
+test-results/
 
 # Operating system files
 .DS_Store

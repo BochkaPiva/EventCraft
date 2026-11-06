@@ -1,0 +1,15 @@
+.git
+.github
+.local
+.vercel
+.supabase
+**/.env
+**/.env.*
+**/node_modules
+**/.next
+**/dist
+**/coverage
+**/*.tsbuildinfo
+prototype
+supabase/.temp
+supabase/.branches
