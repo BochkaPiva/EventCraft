@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "@fontsource-variable/inter";
 export const metadata: Metadata = {
   title: "EventCraft",
   description: "Рабочее пространство ивент-агентства",

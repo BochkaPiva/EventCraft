@@ -10,7 +10,7 @@ export function getServerConfiguration() {
     origin: process.env.APP_ORIGIN,
   });
 }
-export async function requireSession() {
+export async function createSessionClient() {
   const config = getServerConfiguration();
   const jar = await cookies();
   const client = createServerClient(config.url, config.key, {
@@ -31,6 +31,10 @@ export async function requireSession() {
       },
     },
   });
+  return { client, origin: config.origin };
+}
+export async function requireSession() {
+  const { client, origin } = await createSessionClient();
   const { data, error } = await client.auth.getUser();
   if (error) {
     if ((error.status || 0) >= 500 || error.name === "AuthRetryableFetchError")
@@ -40,5 +44,5 @@ export async function requireSession() {
   if (!data.user) throw new HttpError(401, "authentication_required");
   if (!data.user.email_confirmed_at)
     throw new HttpError(403, "verified_account_required");
-  return { client, user: data.user, origin: config.origin };
+  return { client, user: data.user, origin };
 }

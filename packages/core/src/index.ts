@@ -72,6 +72,7 @@ export const createAgencyInputSchema = z
 export const createProposalInputSchema = z
   .object({
     agencyId: idSchema,
+    creationKey: idSchema,
     title: z.string().trim().max(180).default(""),
     document: draftDocumentSchema.default({ schemaVersion: 1, blocks: [] }),
   })
