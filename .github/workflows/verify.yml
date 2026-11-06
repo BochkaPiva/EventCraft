@@ -61,5 +61,5 @@ jobs:
           cache-dependency-path: prototype/package-lock.json
       - run: npm ci
       - run: npm test
-      - run: npm run test:sites
       - run: npm run build
+      - run: npm run test:sites
