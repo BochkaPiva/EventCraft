@@ -1,0 +1,738 @@
+.spatial-editor {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  color: #111827;
+  background: #f8fafc;
+  font:
+    14px/1.45 Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+.spatial-editor *,
+.spatial-editor *::before,
+.spatial-editor *::after {
+  box-sizing: border-box;
+}
+.spatial-editor button,
+.spatial-editor input {
+  font: inherit;
+}
+.spatial-editor button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+  padding: 7px 10px;
+  color: #334155;
+  background: #fff;
+  cursor: pointer;
+}
+.spatial-editor button:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+.spatial-editor button:focus-visible,
+.spatial-editor input:focus-visible,
+.spatial-plan:focus-visible,
+.spatial-three canvas:focus-visible {
+  outline: 2px solid #6366f1;
+  outline-offset: 3px;
+}
+.spatial-editor button:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+.spatial-topbar {
+  min-height: 72px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fff;
+}
+.spatial-editor .spatial-back {
+  border: 0;
+  background: transparent;
+  padding-left: 2px;
+  white-space: nowrap;
+}
+.spatial-title {
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  gap: 3px;
+}
+.spatial-title strong {
+  font-size: 14px;
+  font-weight: 600;
+}
+.spatial-title > span {
+  font-size: 12px;
+  color: #64748b;
+}
+.spatial-mode-tabs {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  margin: 0 auto;
+}
+.spatial-mode-tabs button {
+  border-color: transparent;
+  background: transparent;
+  min-width: 94px;
+}
+.spatial-mode-tabs button.is-active {
+  background: #fff;
+  color: #4338ca;
+  border-color: #dce1ec;
+  box-shadow: 0 1px 3px #0f172a0b;
+}
+.spatial-top-actions {
+  display: flex;
+  gap: 8px;
+}
+.spatial-editor .spatial-primary {
+  background: #18181b;
+  color: white;
+  border-color: #18181b;
+}
+.spatial-editor .spatial-primary:hover {
+  background: #33333a;
+}
+.spatial-workspace {
+  display: grid;
+  grid-template-columns: 226px minmax(0, 1fr) 246px;
+  flex: 1;
+  min-height: 0;
+}
+.spatial-library {
+  border-right: 1px solid #e2e8f0;
+  background: #fff;
+  overflow-y: auto;
+  min-height: 0;
+  padding: 18px 12px;
+}
+.spatial-panel-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 4px 13px;
+}
+.spatial-panel-heading strong {
+  font-weight: 600;
+  font-size: 14px;
+}
+.spatial-panel-heading > span {
+  font-size: 12px;
+  color: #64748b;
+}
+.spatial-shelf {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.spatial-editor .spatial-shelf-item {
+  text-align: left;
+  padding: 10px 7px;
+  justify-content: flex-start;
+  border-color: transparent;
+  min-height: 62px;
+  width: 100%;
+}
+.spatial-shelf-item > span:nth-child(2) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.spatial-shelf-item strong {
+  font-size: 13px;
+  font-weight: 500;
+}
+.spatial-shelf-item small {
+  font-size: 11px;
+  color: #64748b;
+}
+.spatial-shelf-item > svg {
+  color: #94a3b8;
+}
+.spatial-furniture-symbol {
+  display: grid;
+  place-items: center;
+  width: 33px;
+  height: 33px;
+  flex: 0 0 33px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #64748b;
+  border-radius: 5px;
+}
+.spatial-symbol-roundTable {
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+}
+.spatial-symbol-stage {
+  background: #eef2ff;
+  color: #6366f1;
+  border-color: #c7d2fe;
+}
+.spatial-symbol-dancefloor {
+  background: #fffbeb;
+  border-color: #f0d594;
+}
+.spatial-symbol-chair {
+  width: 25px;
+  height: 28px;
+  flex-basis: 25px;
+  margin: 0 4px;
+}
+.spatial-object-list {
+  margin-top: 23px;
+  border-top: 1px solid #eef1f5;
+  padding-top: 18px;
+}
+.spatial-object-list > button {
+  width: 100%;
+  min-height: 35px;
+  border: 0;
+  justify-content: space-between;
+  text-align: left;
+  font-size: 12px;
+  padding: 7px 8px;
+}
+.spatial-object-list > button > span:last-child {
+  color: #94a3b8;
+  white-space: nowrap;
+  font-size: 11px;
+}
+.spatial-object-list > button.is-selected {
+  background: #eef2ff;
+  color: #4338ca;
+}
+.spatial-synthetic-note {
+  margin: 20px 5px 0;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.spatial-readonly-note {
+  padding: 10px 5px;
+  color: #64748b;
+  font-size: 13px;
+}
+.spatial-canvas-column {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.spatial-canvas-toolbar {
+  min-height: 53px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fff;
+}
+.spatial-canvas-toolbar > span {
+  font-size: 12px;
+  color: #64748b;
+}
+.spatial-seats {
+  white-space: nowrap;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  color: #334155;
+}
+.spatial-seats > strong {
+  font-size: 19px;
+  font-weight: 600;
+  color: #111827;
+}
+.spatial-seats > span {
+  color: #64748b;
+  font-size: 12px;
+}
+.spatial-seats.needs-review > strong {
+  color: #b45309;
+}
+.spatial-canvas-area {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  overflow: hidden;
+}
+.spatial-plan {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  touch-action: none;
+  user-select: none;
+  outline: none;
+  background: #f3f5f8;
+}
+.spatial-plan-item {
+  cursor: grab;
+}
+.spatial-plan-item:active {
+  cursor: grabbing;
+}
+.spatial-plan-item.is-ghost {
+  opacity: 0.82;
+}
+.spatial-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 49px;
+  padding: 11px 18px;
+  border-top: 1px solid #e2e8f0;
+  background: #fff;
+  color: #64748b;
+  font-size: 12px;
+}
+.spatial-status > svg {
+  flex: 0 0 auto;
+}
+.spatial-status > strong {
+  margin-left: auto;
+  color: #b45309;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.spatial-drag-warning {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  padding: 10px 15px;
+  border: 1px solid #fecaca;
+  background: #fff;
+  color: #b91c1c;
+  border-radius: 8px;
+  box-shadow: 0 3px 12px #0f172a10;
+  font-size: 13px;
+}
+.spatial-properties {
+  min-height: 0;
+  overflow-y: auto;
+  background: #fff;
+  border-left: 1px solid #e2e8f0;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+}
+.spatial-property-section {
+  border-top: 1px solid #eef1f5;
+  padding: 16px 0;
+}
+.spatial-property-section > strong {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.spatial-field-row {
+  display: flex;
+  gap: 10px;
+}
+.spatial-number-field {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  gap: 6px;
+}
+.spatial-number-field > span {
+  font-size: 11px;
+  color: #64748b;
+}
+.spatial-number-field > div {
+  display: flex;
+  align-items: center;
+  border: 1px solid #dbe1e9;
+  border-radius: 6px;
+  background: #fff;
+}
+.spatial-number-field input {
+  width: 100%;
+  min-width: 0;
+  height: 35px;
+  border: 0;
+  padding: 7px 5px 7px 9px;
+  background: transparent;
+  color: #334155;
+  border-radius: 6px;
+  outline-offset: 1px;
+}
+.spatial-number-field > div > span {
+  padding-right: 9px;
+  color: #94a3b8;
+  font-size: 12px;
+}
+.spatial-nudge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 36px);
+  grid-template-rows: repeat(3, 32px);
+  gap: 3px;
+  margin: 14px auto 0;
+  width: max-content;
+}
+.spatial-nudge-grid > button {
+  min-height: 32px;
+  padding: 3px;
+}
+.spatial-nudge-label {
+  display: grid;
+  place-items: center;
+  color: #94a3b8;
+}
+.spatial-rotate-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+}
+.spatial-rotate-row > button {
+  flex-shrink: 0;
+  padding: 8px;
+}
+.spatial-rotate-row .spatial-number-field > span {
+  display: none;
+}
+.spatial-property-hint {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 10px 0 0;
+}
+.spatial-editor .spatial-return {
+  color: #b91c1c;
+  font-size: 12px;
+  border-color: #fee2e2;
+  margin-top: 5px;
+}
+.spatial-properties-empty {
+  padding: 35px 3px;
+  color: #64748b;
+  text-align: center;
+}
+.spatial-properties-empty > svg {
+  margin-bottom: 12px;
+  color: #94a3b8;
+}
+.spatial-properties-empty > strong {
+  display: block;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 500;
+}
+.spatial-properties-empty > p {
+  font-size: 12px;
+  line-height: 1.7;
+}
+.spatial-fixed-note {
+  margin-top: auto;
+  padding: 17px 3px 0;
+  color: #64748b;
+  border-top: 1px solid #eef1f5;
+}
+.spatial-fixed-note > strong {
+  font-size: 12px;
+  color: #475569;
+  font-weight: 500;
+}
+.spatial-fixed-note > p {
+  font-size: 12px;
+  line-height: 1.65;
+  margin-bottom: 0;
+}
+.spatial-static-properties {
+  font-size: 13px;
+  color: #64748b;
+}
+.spatial-three-wrap,
+.spatial-three {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.spatial-three canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  outline: none;
+}
+.spatial-walk-help,
+.spatial-orbit-help {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100% - 24px);
+  padding: 8px 12px;
+  background: #ffffffed;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+  white-space: nowrap;
+  font-size: 12px;
+  pointer-events: none;
+}
+.spatial-orbit-help {
+  top: auto;
+  bottom: 16px;
+}
+.spatial-walk-controls {
+  position: absolute;
+  right: 17px;
+  bottom: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 42px);
+  gap: 5px;
+}
+.spatial-walk-controls > button {
+  width: 42px;
+  height: 40px;
+  background: #ffffffed;
+  box-shadow: 0 2px 6px #0f172a10;
+}
+.spatial-editor .spatial-walk-reset {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: #ffffffed;
+}
+.spatial-webgl-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 15px;
+  padding: 30px;
+  text-align: center;
+  background: #f3f5f8;
+  color: #64748b;
+}
+.spatial-webgl-error > p {
+  max-width: 370px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+@media (max-width: 1150px) {
+  .spatial-workspace {
+    grid-template-columns: 192px minmax(0, 1fr) 218px;
+  }
+  .spatial-title {
+    display: none;
+  }
+  .spatial-topbar {
+    gap: 12px;
+  }
+  .spatial-mode-tabs {
+    margin-left: auto;
+  }
+  .spatial-canvas-toolbar {
+    padding: 10px 14px;
+  }
+}
+@media (max-width: 850px) {
+  .spatial-topbar {
+    flex-wrap: wrap;
+    min-height: 105px;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+  .spatial-top-actions {
+    margin-left: auto;
+  }
+  .spatial-top-actions .spatial-button > span {
+    display: none;
+  }
+  .spatial-mode-tabs {
+    order: 3;
+    width: 100%;
+    margin: 0;
+    justify-content: center;
+  }
+  .spatial-mode-tabs > button {
+    flex: 1;
+  }
+  .spatial-workspace {
+    grid-template-columns: 155px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+  .spatial-properties {
+    grid-column: 1 / -1;
+    max-height: 210px;
+    border-left: 0;
+    border-top: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    display: block;
+  }
+  .spatial-properties .spatial-panel-heading {
+    padding-bottom: 8px;
+  }
+  .spatial-property-section {
+    display: inline-flex;
+    width: 30%;
+    vertical-align: top;
+    border-top: 0;
+    padding: 6px 12px 6px 0;
+    flex-direction: column;
+  }
+  .spatial-property-section > strong {
+    margin-bottom: 7px;
+  }
+  .spatial-nudge-grid {
+    display: none;
+  }
+  .spatial-fixed-note {
+    display: none;
+  }
+  .spatial-properties-empty {
+    padding: 3px;
+    display: flex;
+    gap: 10px;
+    text-align: left;
+    align-items: center;
+  }
+  .spatial-properties-empty > p {
+    margin: 0;
+  }
+  .spatial-properties-empty > svg {
+    flex-shrink: 0;
+    margin: 0;
+  }
+  .spatial-properties-empty > strong {
+    white-space: nowrap;
+  }
+  .spatial-shelf-item small {
+    display: none;
+  }
+  .spatial-editor .spatial-shelf-item {
+    padding: 8px 3px;
+    gap: 6px;
+  }
+  .spatial-furniture-symbol {
+    display: none;
+  }
+  .spatial-shelf-item strong {
+    font-size: 12px;
+  }
+  .spatial-library {
+    padding: 14px 8px;
+  }
+  .spatial-canvas-toolbar > span {
+    display: none;
+  }
+  .spatial-canvas-toolbar {
+    justify-content: flex-end;
+  }
+  .spatial-status {
+    min-height: 54px;
+    flex-wrap: wrap;
+    gap: 5px;
+    padding: 8px 12px;
+  }
+  .spatial-status > strong {
+    margin-left: 20px;
+  }
+  .spatial-object-list > button {
+    font-size: 11px;
+  }
+  .spatial-object-list > button > span:last-child {
+    display: none;
+  }
+}
+@media (max-width: 540px) {
+  .spatial-workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+  .spatial-library {
+    overflow-x: auto;
+    padding: 7px 10px;
+    border-right: 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .spatial-library > .spatial-panel-heading,
+  .spatial-object-list,
+  .spatial-synthetic-note {
+    display: none;
+  }
+  .spatial-shelf {
+    flex-direction: row;
+    width: max-content;
+    gap: 5px;
+  }
+  .spatial-editor .spatial-shelf-item {
+    min-height: 40px;
+    padding: 7px 10px;
+    border-color: #e2e8f0;
+    width: auto;
+    white-space: nowrap;
+  }
+  .spatial-properties {
+    max-height: 205px;
+  }
+  .spatial-properties .spatial-property-section {
+    width: 50%;
+  }
+  .spatial-property-section:first-of-type {
+    width: 100%;
+  }
+  .spatial-properties-empty > p {
+    font-size: 11px;
+  }
+  .spatial-properties-empty > strong {
+    display: none;
+  }
+  .spatial-plan {
+    min-height: 200px;
+  }
+  .spatial-number-field input {
+    height: 38px;
+  }
+  .spatial-walk-help {
+    font-size: 10px;
+    padding: 7px;
+    white-space: normal;
+    width: max-content;
+    text-align: center;
+  }
+  .spatial-canvas-toolbar {
+    min-height: 42px;
+  }
+  .spatial-readonly-note {
+    padding: 1px;
+    font-size: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spatial-editor * {
+    scroll-behavior: auto;
+    transition: none !important;
+  }
+}
