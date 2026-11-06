@@ -148,6 +148,7 @@ test("untrusted owner and membership fields are rejected by input contracts", ()
   assert.equal(
     createProposalInputSchema.safeParse({
       agencyId: id,
+      creationKey: other,
       title: "КП",
       role: "owner",
     }).success,

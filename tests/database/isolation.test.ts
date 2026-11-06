@@ -17,7 +17,7 @@ test("PostgreSQL tenant and mutation boundary", async (t) => {
     await actor(db, actors.alice);
     const p = (
       await db.query<{ id: string; revision: number; agency_id: string }>(
-        "select * from public.create_proposal($1,$2,$3)",
+        "select * from public.create_proposal($1,$2,$3,gen_random_uuid())",
         [a, "Пример", documentFixture],
       )
     ).rows[0];
@@ -40,10 +40,93 @@ test("PostgreSQL tenant and mutation boundary", async (t) => {
         }
         await actor(db, actors.alice);
         const created = await db.query<{ title: string }>(
-          "select * from public.create_proposal($1,$2,$3)",
+          "select * from public.create_proposal($1,$2,$3,gen_random_uuid())",
           [a, "\u00a0\tНазвание\n\ufeff", documentFixture],
         );
         assert.equal(created.rows[0].title, "Название");
+      },
+    );
+    await t.test(
+      "creation retry returns the same draft without overwriting later edits",
+      async () => {
+        await actor(db, actors.alice);
+        const key = "99999999-9999-4999-8999-999999999999";
+        const args = [a, "Повтор", documentFixture, key];
+        const first = (
+          await db.query<{ id: string }>(
+            "select * from public.create_proposal($1,$2,$3,$4)",
+            args,
+          )
+        ).rows[0];
+        await db.query(
+          "select * from public.save_proposal_draft($1,$2,$3,$4)",
+          [first.id, 0, "Позже изменено", documentFixture],
+        );
+        const again = (
+          await db.query<{ id: string; title: string; revision: number }>(
+            "select * from public.create_proposal($1,$2,$3,$4)",
+            args,
+          )
+        ).rows[0];
+        assert.equal(again.id, first.id);
+        assert.equal(again.title, "Позже изменено");
+        assert.equal(again.revision, 1);
+        await assert.rejects(
+          db.query("select * from public.create_proposal($1,$2,$3,$4)", [
+            a,
+            "Подмена",
+            documentFixture,
+            key,
+          ]),
+          { code: "EC422" },
+        );
+        await actor(db, actors.bob);
+        await assert.rejects(
+          db.query("select * from public.create_proposal($1,$2,$3,$4)", args),
+          { code: "P0002" },
+        );
+      },
+    );
+    await t.test(
+      "search treats wildcard characters as literal text and preserves tenant isolation",
+      async () => {
+        await actor(db, actors.alice);
+        for (const title of ["Север*", "Северная сцена", "Цена 10%_"])
+          await db.query(
+            "select * from public.create_proposal($1,$2,$3,gen_random_uuid())",
+            [a, title, documentFixture],
+          );
+        const star = await db.query<{ title: string }>(
+          "select * from public.search_proposals($1,$2)",
+          [a, "*"],
+        );
+        assert.deepEqual(
+          star.rows.map((r) => r.title),
+          ["Север*"],
+        );
+        const percent = await db.query<{ title: string }>(
+          "select * from public.search_proposals($1,$2)",
+          [a, "%_"],
+        );
+        assert.deepEqual(
+          percent.rows.map((r) => r.title),
+          ["Цена 10%_"],
+        );
+        const text = await db.query(
+          "select * from public.search_proposals($1,$2)",
+          [a, "север"],
+        );
+        assert.equal(text.rows.length, 2);
+        await actor(db, actors.bob);
+        assert.equal(
+          (
+            await db.query("select * from public.search_proposals($1,$2)", [
+              a,
+              "",
+            ])
+          ).rows.length,
+          0,
+        );
       },
     );
     await t.test(
@@ -69,11 +152,10 @@ test("PostgreSQL tenant and mutation boundary", async (t) => {
           0,
         );
         await assert.rejects(
-          db.query("select * from public.create_proposal($1,$2,$3)", [
-            a,
-            "Чужое",
-            documentFixture,
-          ]),
+          db.query(
+            "select * from public.create_proposal($1,$2,$3,gen_random_uuid())",
+            [a, "Чужое", documentFixture],
+          ),
           { code: "P0002" },
         );
         await assert.rejects(

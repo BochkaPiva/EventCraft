@@ -92,6 +92,7 @@ export function databaseError(
   conflictCode = "revision_conflict",
 ): never {
   if (error.code === "EC409") throw new HttpError(409, conflictCode);
+  if (error.code === "EC422") throw new HttpError(409, "creation_key_reused");
   if (["42501", "P0002"].includes(error.code || ""))
     throw new HttpError(404, "not_found");
   if (["22023", "23514", "22003"].includes(error.code || ""))
