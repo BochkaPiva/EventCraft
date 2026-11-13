@@ -1,0 +1,835 @@
+/* A document first; tools appear at the object being edited. */
+.editor-direct {
+  --canvas: #f0f1f3;
+  --ink: #20232a;
+  color: var(--ink);
+  grid-template-columns: 224px minmax(0, 1fr);
+}
+.editor-direct .editor-header {
+  gap: 18px;
+  padding: 0 24px;
+  border-color: #e8e9ed;
+}
+.editor-direct .back-link {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 32px;
+  border-radius: 6px;
+}
+.editor-direct .back-link:hover {
+  background: #f3f4f6;
+}
+.editor-direct .editor-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 650;
+  font-size: 15px;
+  letter-spacing: -0.4px;
+}
+.editor-direct .editor-brand svg {
+  color: #5b55ca;
+  stroke-width: 1.8;
+}
+.editor-direct .header-divider {
+  height: 18px;
+  width: 1px;
+  background: #e2e4e9;
+}
+.editor-direct .editor-document-name {
+  color: #717784;
+  font-size: 12px;
+}
+.editor-direct .save-status {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 11px;
+}
+.editor-direct .save-status.saved svg {
+  color: #45916b;
+}
+.editor-direct .preview-trigger {
+  background: #24262c;
+  color: white;
+  border-color: #24262c;
+  padding: 7px 13px;
+  font-size: 12px;
+}
+.editor-direct .preview-trigger:hover {
+  background: #3c3e46;
+}
+.editor-direct .editor-outline {
+  background: #fafafb;
+  padding: 22px 12px;
+}
+.editor-direct .outline-top {
+  padding: 0 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 500;
+  color: #858995;
+}
+.editor-direct .outline-top button {
+  display: grid;
+  place-items: center;
+}
+.editor-direct .editor-outline nav a {
+  gap: 12px;
+  padding: 12px 10px;
+  margin: 1px 0;
+  align-items: center;
+  font-size: 12px;
+}
+.editor-direct .editor-outline nav a strong {
+  font-weight: 450;
+}
+.editor-direct .outline-block-icon {
+  color: #959baa;
+  display: flex;
+}
+.editor-direct .editor-outline nav small {
+  display: none;
+}
+.editor-direct .editor-outline nav a[aria-current] {
+  box-shadow: none;
+  background: #eeeef8;
+  color: #5551a5;
+}
+.editor-direct .editor-outline nav a[aria-current] .outline-block-icon {
+  color: #7470c0;
+}
+.editor-direct .add-section {
+  border: 0;
+  padding: 16px 0;
+  margin: 4px 0;
+}
+.editor-direct .add-section .section-picker > summary {
+  border: 0;
+  background: transparent;
+  justify-content: flex-start;
+  color: #9599a4;
+  gap: 12px;
+  padding: 10px;
+  font-size: 12px;
+}
+.editor-direct .add-section .section-picker > summary:hover {
+  color: #5551a5;
+  background: #f0f0f6;
+}
+.editor-direct .editor-canvas {
+  position: relative;
+  background: var(--canvas);
+  padding: 38px 56px 80px;
+}
+.editor-direct .proposal-paper {
+  max-width: 860px;
+  min-height: 880px;
+  border: 1px solid #e2e4e8;
+  border-radius: 10px;
+  box-shadow: 0 3px 12px #20232a03;
+  padding: 64px 76px;
+}
+.editor-direct .document-kicker {
+  color: #9397a1;
+  font-size: 11px;
+  margin-bottom: 18px;
+}
+.editor-direct .document-title {
+  color: #22252e;
+  font-size: 46px;
+  line-height: 1.13;
+  font-weight: 580;
+  letter-spacing: -1.8px;
+  margin-bottom: 48px;
+}
+.editor-direct .document-title:hover,
+.editor-direct .block-heading:hover,
+.editor-direct .block-body:hover {
+  background: transparent;
+}
+.editor-direct textarea:focus-visible,
+.editor-direct input:focus-visible {
+  outline: none;
+  box-shadow: 0 1px #bbb8e7;
+}
+.editor-direct .document-title:focus-visible,
+.editor-direct .block-heading:focus-visible,
+.editor-direct .block-body:focus-visible {
+  outline: none;
+  box-shadow: inset 2px 0 #a4a0dd;
+  padding-left: 12px !important;
+  margin-left: -12px;
+  width: calc(100% + 12px);
+}
+.editor-direct .document-block {
+  position: relative;
+  margin-top: 0;
+  padding: 14px 0 6px;
+  border-radius: 4px;
+  scroll-margin-top: 90px;
+}
+.editor-direct .block-heading {
+  font-size: 25px;
+  line-height: 1.35;
+  color: #292c34;
+  letter-spacing: -0.7px;
+  font-weight: 550;
+  padding-bottom: 12px !important;
+}
+.editor-direct .block-body {
+  min-height: 48px;
+  font-size: 15px;
+  line-height: 1.85;
+  color: #606572;
+}
+.editor-direct .block-toolbar {
+  position: absolute;
+  left: -48px;
+  top: 12px;
+  width: 34px;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  opacity: 0;
+  transition: opacity 0.12s;
+  z-index: 4;
+}
+.editor-direct .document-block:hover > .block-toolbar,
+.editor-direct .document-block:focus-within > .block-toolbar,
+.editor-direct .block-toolbar:has(details[open]) {
+  opacity: 1;
+}
+.editor-direct .block-actions > summary {
+  min-height: 30px;
+  width: 32px;
+  padding: 5px;
+}
+.editor-direct .block-actions .editor-popover-panel {
+  left: 0;
+  right: auto;
+  width: 230px;
+}
+.editor-direct .hidden-label {
+  background: transparent;
+  padding: 4px;
+  color: #7b7c91;
+}
+.editor-direct .block-hidden {
+  background: #f8f8fb;
+  border: 1px dashed #dcdde6;
+  padding: 18px;
+  margin: 6px -18px;
+}
+.editor-direct .section-insert {
+  padding: 0;
+  margin: 12px 0;
+  height: 24px;
+  position: relative;
+}
+.editor-direct .section-insert::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 12px;
+  height: 1px;
+  background: #eeedf5;
+  opacity: 0;
+}
+.editor-direct .section-insert:has(summary:hover)::before,
+.editor-direct .section-insert:focus-within::before {
+  opacity: 1;
+}
+.editor-direct .section-insert summary {
+  width: 28px;
+  height: 24px;
+  min-height: 24px;
+  padding: 2px;
+  color: #a09cbc;
+  border: 0;
+  border-radius: 5px;
+  opacity: 0;
+  background: #fff;
+}
+.editor-direct .section-insert:hover summary,
+.editor-direct .section-insert:focus-within summary {
+  opacity: 1;
+}
+.editor-direct .section-insert:has(details[open]) {
+  z-index: 8;
+}
+.editor-direct .editor-popover summary {
+  gap: 8px;
+}
+.editor-direct .section-picker .editor-popover-panel {
+  width: 190px;
+  padding: 6px;
+}
+.editor-direct .section-picker .editor-popover-panel button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 42px;
+}
+.editor-direct .section-picker .editor-popover-panel button svg {
+  color: #8d90a2;
+}
+.editor-direct .section-picker .editor-popover-panel button strong {
+  font-size: 13px;
+  font-weight: 450;
+}
+.editor-direct .editor-bottom-note {
+  display: none;
+}
+.editor-direct .reorder-handle {
+  border: 0;
+  background: transparent;
+  color: #a0a4b1;
+  width: 30px;
+  height: 28px;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  flex: none;
+}
+.editor-direct .reorder-handle:hover {
+  color: #605ba9;
+  background: #f1f0f9;
+}
+.editor-direct .reorder-handle:active,
+.editor-direct .reorder-handle[aria-pressed="true"] {
+  cursor: grabbing;
+  color: #6154b8;
+  background: #eeeafc;
+}
+.editor-direct [data-reorder-item] {
+  position: relative;
+}
+.editor-direct [data-dragging="true"] {
+  opacity: 0.35;
+  background: #f2f0fc;
+}
+.editor-direct [data-drop-before="true"]::before,
+.editor-direct [data-drop-after="true"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #8572ce;
+  pointer-events: none;
+  z-index: 5;
+}
+.editor-direct [data-drop-before="true"]::before {
+  top: -8px;
+}
+.editor-direct [data-drop-after="true"]::after {
+  bottom: -8px;
+}
+.editor-direct.is-reordering {
+  cursor: grabbing;
+}
+.editor-direct .program-fields {
+  margin-top: 6px;
+}
+.editor-direct .program-item {
+  grid-template-columns: 105px minmax(0, 1fr) 28px;
+  gap: 20px;
+  padding: 20px 0;
+  border: 0;
+}
+.editor-direct .program-item:not(:last-of-type) .program-content::before {
+  content: "";
+  position: absolute;
+  left: -20px;
+  width: 1px;
+  background: #e9e8f0;
+  top: 34px;
+  bottom: -34px;
+}
+.editor-direct .program-item > .reorder-handle {
+  position: absolute;
+  left: -34px;
+  top: 22px;
+  opacity: 0;
+}
+.editor-direct .program-item:hover > .reorder-handle,
+.editor-direct .program-item:focus-within > .reorder-handle {
+  opacity: 1;
+}
+.editor-direct .program-time {
+  padding-top: 3px;
+}
+.editor-direct .program-time > span {
+  display: none;
+}
+.editor-direct .program-time input {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.4px;
+  padding: 0;
+  border-color: transparent;
+  min-height: 30px;
+  background: transparent;
+}
+.editor-direct .program-time input::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  width: 12px;
+}
+.editor-direct .program-time:hover input::-webkit-calendar-picker-indicator,
+.editor-direct
+  .program-time:focus-within
+  input::-webkit-calendar-picker-indicator {
+  opacity: 0.5;
+}
+.editor-direct .program-content {
+  position: relative;
+  padding: 0;
+}
+.editor-direct .program-content input {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 2px 0;
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+.editor-direct .program-content textarea {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin-top: 8px;
+  font-size: 13px;
+  line-height: 1.75;
+  color: #7c818d;
+  min-height: 24px;
+}
+.editor-direct .program-actions {
+  padding: 0;
+  opacity: 0;
+}
+.editor-direct .program-item:hover .program-actions,
+.editor-direct .program-item:focus-within .program-actions {
+  opacity: 1;
+}
+.editor-direct .program-actions summary {
+  padding: 4px;
+  min-height: 30px;
+  width: 28px;
+}
+.editor-direct .program-actions .editor-popover-panel {
+  width: 210px;
+}
+.editor-direct .add-line {
+  background: transparent;
+  border: 0;
+  color: #969aa6;
+  padding: 6px 0;
+  display: inline-flex;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 400;
+}
+.editor-direct .add-line:hover {
+  color: #655ca8;
+  background: transparent;
+}
+.editor-direct .estimate-labels {
+  color: #a0a4ad;
+  font-size: 10px;
+  padding: 10px 0;
+  grid-template-columns: minmax(130px, 1fr) 66px 96px 104px 26px;
+  gap: 10px;
+}
+.editor-direct .estimate-row {
+  grid-template-columns: minmax(130px, 1fr) 66px 96px 104px 26px;
+  gap: 10px;
+  padding: 14px 0;
+  border-color: #eeeff2;
+}
+.editor-direct .estimate-row > .reorder-handle {
+  position: absolute;
+  left: -34px;
+  top: 16px;
+  opacity: 0;
+}
+.editor-direct .estimate-row:hover > .reorder-handle,
+.editor-direct .estimate-row:focus-within > .reorder-handle {
+  opacity: 1;
+}
+.editor-direct .estimate-row input:not([type="checkbox"]) {
+  border-color: transparent;
+  background: transparent;
+  border-radius: 4px;
+  padding: 6px 3px;
+  font-size: 13px;
+}
+.editor-direct .estimate-row input:not([type="checkbox"]):hover {
+  background: #fafafb;
+}
+.editor-direct .estimate-row input[aria-invalid="true"] {
+  background: #fff3f0;
+  border-color: #e8b9b1;
+}
+.editor-direct .line-description > input {
+  color: #4b505c;
+}
+.editor-direct .line-inclusion {
+  font-size: 10px;
+  color: #9b9eaa;
+  min-height: 23px;
+}
+.editor-direct .estimate-row:not(.excluded) .line-inclusion > span {
+  opacity: 0;
+}
+.editor-direct .estimate-row:hover .line-inclusion > span,
+.editor-direct .estimate-row:focus-within .line-inclusion > span {
+  opacity: 1;
+}
+.editor-direct .line-inclusion input[type="checkbox"] {
+  width: 12px;
+  height: 12px;
+  accent-color: #7770a3;
+}
+.editor-direct .estimate-line-total {
+  padding-top: 7px;
+  color: #505561;
+  font-size: 13px;
+}
+.editor-direct .estimate-remove {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 30px;
+  padding: 0;
+  opacity: 0;
+  color: #adb0bb;
+}
+.editor-direct .estimate-row:hover .estimate-remove,
+.editor-direct .estimate-row:focus-within .estimate-remove {
+  opacity: 1;
+}
+.editor-direct .estimate-summary {
+  border-color: #dce0e6;
+  margin-top: 18px;
+  padding-top: 24px;
+  gap: 16px;
+}
+.editor-direct .estimate-summary > span {
+  font-size: 12px;
+  color: #9398a3;
+}
+.editor-direct .estimate-summary strong {
+  font-size: 29px;
+  letter-spacing: -0.9px;
+  color: #343741;
+  font-weight: 550;
+}
+.editor-direct .estimate-summary small {
+  font-size: 11px;
+  color: #a2a6b0;
+}
+.editor-direct.outline-collapsed {
+  grid-template-columns: 0 minmax(0, 1fr);
+}
+.editor-direct.outline-collapsed .editor-outline {
+  visibility: hidden;
+  overflow: hidden;
+  padding: 0;
+}
+.editor-direct .outline-restore {
+  position: fixed;
+  top: 72px;
+  left: 18px;
+  background: #fff;
+  border: 1px solid #e2e4e8;
+  display: grid;
+  place-items: center;
+  z-index: 4;
+}
+@media (min-width: 761px) and (max-width: 1180px) {
+  .editor-direct {
+    grid-template-columns: 192px minmax(0, 1fr);
+  }
+  .editor-direct .editor-canvas {
+    padding: 28px 24px;
+  }
+  .editor-direct .proposal-paper {
+    padding: 48px 48px;
+  }
+  .editor-direct .document-title {
+    font-size: 39px;
+  }
+  .editor-direct .estimate-row {
+    grid-template-columns: minmax(100px, 1fr) 68px 86px;
+  }
+  .editor-direct .estimate-labels {
+    display: none;
+  }
+  .editor-direct .estimate-number > span {
+    font-size: 10px;
+  }
+  .editor-direct .estimate-remove {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .editor-direct .estimate-line-total {
+    grid-column: 2 / 4;
+    grid-row: 2;
+  }
+}
+@media (max-width: 760px) {
+  .editor-direct {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .editor-direct .editor-header {
+    gap: 9px;
+    padding: 0 14px;
+  }
+  .editor-direct .editor-brand {
+    font-size: 13px;
+  }
+  .editor-direct .editor-brand svg,
+  .editor-direct .header-divider {
+    display: none;
+  }
+  .editor-direct .save-status {
+    margin-left: auto;
+    font-size: 10px;
+  }
+  .editor-direct .preview-trigger {
+    min-height: 36px;
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  .editor-direct .editor-outline {
+    padding: 5px 16px;
+    background: #fff;
+  }
+  .editor-direct .outline-top {
+    display: none;
+  }
+  .editor-direct .add-section {
+    margin: 0 0 0 auto;
+    padding: 0;
+  }
+  .editor-direct .add-section .section-picker > summary {
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+  }
+  .editor-direct .add-section .section-picker > summary > span {
+    display: none;
+  }
+  .editor-direct .outline-mobile > summary {
+    font-size: 12px;
+  }
+  .editor-direct .editor-canvas {
+    padding: 0 0 60px;
+    background: #fff;
+  }
+  .editor-direct .proposal-paper {
+    border: 0;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 30px 28px 60px 42px;
+    min-height: 700px;
+  }
+  .editor-direct .document-title {
+    font-size: 34px;
+    line-height: 1.17;
+    letter-spacing: -1.2px;
+    margin-bottom: 28px;
+  }
+  .editor-direct .document-kicker {
+    margin-bottom: 14px;
+    font-size: 10px;
+  }
+  .editor-direct .document-block {
+    padding-top: 12px;
+    scroll-margin-top: 120px;
+  }
+  .editor-direct .block-heading {
+    font-size: 23px;
+  }
+  .editor-direct .block-body {
+    font-size: 16px;
+  }
+  .editor-direct .block-toolbar {
+    left: -38px;
+    top: 7px;
+    opacity: 1;
+    gap: 0;
+  }
+  .editor-direct .block-actions > summary {
+    min-height: 34px;
+    width: 32px;
+  }
+  .editor-direct .reorder-handle {
+    min-height: 36px;
+    width: 32px;
+  }
+  .editor-direct .section-insert {
+    height: 32px;
+    margin: 10px 0;
+  }
+  .editor-direct .section-insert summary {
+    min-height: 32px;
+    width: 44px;
+    opacity: 0.65;
+  }
+  .editor-direct .editor-popover-panel button {
+    min-height: 44px;
+  }
+  .editor-direct .program-item {
+    grid-template-columns: 76px minmax(0, 1fr);
+    padding: 16px 0;
+    gap: 12px;
+  }
+  .editor-direct .program-content::before {
+    display: none;
+  }
+  .editor-direct .program-content {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .editor-direct .program-item > .reorder-handle {
+    left: -34px;
+    top: 14px;
+    opacity: 0.75;
+  }
+  .editor-direct .program-time input {
+    font-size: 16px;
+  }
+  .editor-direct .program-content input {
+    font-size: 16px;
+  }
+  .editor-direct .program-content textarea {
+    font-size: 16px;
+  }
+  .editor-direct .program-actions {
+    position: absolute;
+    right: -28px;
+    top: 12px;
+    padding: 0;
+    opacity: 1;
+    height: 44px;
+  }
+  .editor-direct .program-actions summary {
+    min-height: 44px;
+  }
+  .editor-direct .estimate-row {
+    grid-template-columns: 1fr 1fr;
+    padding: 14px 0;
+  }
+  .editor-direct .estimate-row > .reorder-handle {
+    opacity: 0.7;
+    left: -36px;
+    top: 18px;
+  }
+  .editor-direct .estimate-row input:not([type="checkbox"]) {
+    height: 40px;
+    font-size: 16px;
+  }
+  .editor-direct .estimate-number > span {
+    font-size: 11px;
+  }
+  .editor-direct .estimate-line-total {
+    grid-column: 1;
+    font-size: 13px;
+  }
+  .editor-direct .estimate-line-total > span {
+    font-size: 10px;
+  }
+  .editor-direct .estimate-remove {
+    grid-column: 2;
+    opacity: 1;
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+  }
+  .editor-direct .line-inclusion {
+    min-height: 30px;
+  }
+  .editor-direct .estimate-row:not(.excluded) .line-inclusion > span {
+    opacity: 1;
+  }
+  .editor-direct .estimate-summary strong {
+    font-size: 26px;
+  }
+  .editor-direct.outline-collapsed {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .editor-direct.outline-collapsed .editor-outline {
+    visibility: visible;
+    padding: 5px 16px;
+    overflow: visible;
+  }
+  .editor-direct .outline-restore {
+    display: none;
+  }
+}
+
+.editor-direct .line-description {
+  position: relative;
+  padding-left: 22px;
+}
+.editor-direct .line-inclusion {
+  position: absolute;
+  left: 0;
+  top: 7px;
+  min-height: 24px;
+}
+.editor-direct .estimate-row .line-inclusion > span {
+  display: none;
+}
+.editor-direct .estimate-row.excluded .line-description {
+  padding-bottom: 20px;
+}
+.editor-direct .estimate-row.excluded .line-inclusion > span {
+  display: block;
+  position: absolute;
+  left: 22px;
+  top: 27px;
+  white-space: nowrap;
+  font-size: 10px;
+  color: #898391;
+}
+.editor-direct .add-section .section-picker > summary {
+  color: #7b7e8a;
+}
+@media (max-width: 760px) {
+  .editor-direct .line-inclusion {
+    top: 10px;
+  }
+  .editor-direct .line-inclusion input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 760px) {
+  .editor-direct .line-description {
+    padding-left: 28px;
+  }
+  .editor-direct .line-inclusion {
+    width: 24px;
+    min-height: 36px;
+    justify-content: center;
+    left: -2px;
+  }
+  .editor-direct .reorder-handle {
+    min-height: 44px;
+    width: 36px;
+  }
+}
