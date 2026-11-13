@@ -11,7 +11,7 @@ import { requireSession } from "../../../lib/supabase.ts";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export async function GET() {
-  return boundary(async () => {
+  return boundary("agencies.list", async () => {
     const { client } = await requireSession();
     const { data, error } = await client
       .from("agencies")
@@ -22,7 +22,7 @@ export async function GET() {
   });
 }
 export async function POST(request: Request) {
-  return boundary(async () => {
+  return boundary("agencies.create", async () => {
     const { client, origin } = await requireSession();
     requireOrigin(request, origin);
     const input = await readJson(request, createAgencyInputSchema, 8192);

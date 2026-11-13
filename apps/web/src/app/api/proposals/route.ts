@@ -13,7 +13,7 @@ import { readListOptions, nextCursor } from "../../../lib/proposal-list.ts";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
-  return boundary(async () => {
+  return boundary("proposals.list", async () => {
     const { client } = await requireSession();
     const agency = idSchema.safeParse(
       new URL(request.url).searchParams.get("agencyId"),
@@ -49,7 +49,7 @@ export async function GET(request: Request) {
   });
 }
 export async function POST(request: Request) {
-  return boundary(async () => {
+  return boundary("proposals.create", async () => {
     const { client, origin } = await requireSession();
     requireOrigin(request, origin);
     const input = await readJson(request, createProposalInputSchema);

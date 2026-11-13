@@ -3,7 +3,7 @@ import { requireSession } from "../../../../lib/supabase.ts";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export async function GET() {
-  return boundary(async () => {
+  return boundary("auth.session", async () => {
     const { user } = await requireSession();
     return json({ user: { id: user.id, email: user.email } });
   });

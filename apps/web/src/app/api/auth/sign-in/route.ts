@@ -18,7 +18,7 @@ const credentials = z
   .strict();
 
 export async function POST(request: Request) {
-  return boundary(async () => {
+  return boundary("auth.sign_in", async () => {
     const { client, origin } = await createSessionClient();
     requireOrigin(request, origin);
     const input = await readJson(request, credentials, 8192);

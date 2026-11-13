@@ -18,7 +18,7 @@ async function identifier(context: Context) {
   return parsed.data;
 }
 export async function GET(_request: Request, context: Context) {
-  return boundary(async () => {
+  return boundary("proposals.read", async () => {
     const { client } = await requireSession();
     const id = await identifier(context);
     const { data, error } = await client
@@ -34,7 +34,7 @@ export async function GET(_request: Request, context: Context) {
   });
 }
 export async function PATCH(request: Request, context: Context) {
-  return boundary(async () => {
+  return boundary("proposals.save", async () => {
     const { client, origin } = await requireSession();
     requireOrigin(request, origin);
     const id = await identifier(context);

@@ -1,4 +1,28 @@
 import type { z } from "zod";
+import { randomUUID } from "node:crypto";
+
+export type ApiOperation =
+  | "auth.sign_in"
+  | "auth.sign_out"
+  | "auth.session"
+  | "agencies.list"
+  | "agencies.create"
+  | "proposals.list"
+  | "proposals.create"
+  | "proposals.read"
+  | "proposals.save";
+
+export type RequestEvent = {
+  event: "api_request";
+  requestId: string;
+  operation: ApiOperation;
+  status: number;
+  durationMs: number;
+};
+
+function writeRequestEvent(event: RequestEvent) {
+  console.info(JSON.stringify(event));
+}
 export class HttpError extends Error {
   constructor(
     public status: number,
@@ -99,12 +123,34 @@ export function databaseError(
     throw new HttpError(400, "invalid_request");
   throw new HttpError(503, "storage_unavailable");
 }
-export async function boundary(fn: () => Promise<Response>) {
+export async function boundary(
+  operation: ApiOperation,
+  fn: () => Promise<Response>,
+  writeEvent: (event: RequestEvent) => void = writeRequestEvent,
+) {
+  // No request object enters the logger: URLs, credentials and content stay out.
+  const requestId = randomUUID();
+  const started = performance.now();
+  let response: Response;
   try {
-    return await fn();
+    response = await fn();
   } catch (error) {
-    if (error instanceof HttpError)
-      return json({ error: error.code }, error.status);
-    return json({ error: "internal_error" }, 500);
+    response =
+      error instanceof HttpError
+        ? json({ error: error.code }, error.status)
+        : json({ error: "internal_error" }, 500);
   }
+  response.headers.set("X-Request-Id", requestId);
+  try {
+    writeEvent({
+      event: "api_request",
+      requestId,
+      operation,
+      status: response.status,
+      durationMs: Math.max(0, Math.round(performance.now() - started)),
+    });
+  } catch {
+    // An unavailable diagnostic sink cannot turn a committed write into a 500.
+  }
+  return response;
 }

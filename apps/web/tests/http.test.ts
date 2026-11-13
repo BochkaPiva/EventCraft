@@ -79,7 +79,7 @@ test("private responses and error responses are never publicly cached", async ()
     json({ id: "example" }).headers.get("cache-control"),
     "private, no-store",
   );
-  const result = await boundary(async () => {
+  const result = await boundary("proposals.save", async () => {
     throw Error("PRIVATE SQL connection string");
   });
   assert.equal(result.status, 500);
@@ -87,10 +87,16 @@ test("private responses and error responses are never publicly cached", async ()
   assert.equal(result.headers.get("cache-control"), "private, no-store");
 });
 test("database errors distinguish stale edits without exposing SQL messages", async () => {
-  const denied = await boundary(async () => databaseError({ code: "42501" }));
+  const denied = await boundary("proposals.save", async () =>
+    databaseError({ code: "42501" }),
+  );
   assert.equal(denied.status, 404);
-  const stale = await boundary(async () => databaseError({ code: "EC409" }));
+  const stale = await boundary("proposals.save", async () =>
+    databaseError({ code: "EC409" }),
+  );
   assert.equal(stale.status, 409);
-  const unknown = await boundary(async () => databaseError({ code: "XX000" }));
+  const unknown = await boundary("proposals.save", async () =>
+    databaseError({ code: "XX000" }),
+  );
   assert.equal(unknown.status, 503);
 });
