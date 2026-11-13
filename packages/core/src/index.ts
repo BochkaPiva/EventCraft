@@ -37,11 +37,33 @@ const estimateBlock = z
     visible: z.boolean(),
   })
   .strict();
+export const programItemSchema = z
+  .object({
+    id: idSchema,
+    time: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+      .nullable(),
+    title: z.string().max(200),
+    description: z.string().max(2000),
+  })
+  .strict();
+const programBlock = z
+  .object({
+    id: idSchema,
+    type: z.literal("program"),
+    heading: z.string().max(160),
+    items: z.array(programItemSchema).max(200),
+    visible: z.boolean(),
+  })
+  .strict();
 export const draftDocumentSchema = z
   .object({
     schemaVersion: z.literal(1),
     blocks: z
-      .array(z.discriminatedUnion("type", [textBlock, estimateBlock]))
+      .array(
+        z.discriminatedUnion("type", [textBlock, estimateBlock, programBlock]),
+      )
       .max(64),
   })
   .strict()
@@ -62,10 +84,32 @@ export const draftDocumentSchema = z
           lineIds.add(l.id);
         }
       }
+      if (b.type === "program") {
+        const itemIds = new Set<string>();
+        for (const item of b.items) {
+          if (itemIds.has(item.id))
+            ctx.addIssue({
+              code: "custom",
+              message: "Duplicate program item identifier",
+            });
+          itemIds.add(item.id);
+        }
+      }
     }
   });
 export type DraftDocument = z.infer<typeof draftDocumentSchema>;
 export type EstimateLine = z.infer<typeof estimateLineSchema>;
+export type ProgramItem = z.infer<typeof programItemSchema>;
+export function programTimeOrderWarnings(items: ReadonlyArray<ProgramItem>) {
+  let previous: string | null = null;
+  const warnings: string[] = [];
+  for (const item of items) {
+    if (item.time === null) continue;
+    if (previous !== null && item.time < previous) warnings.push(item.id);
+    previous = item.time;
+  }
+  return warnings;
+}
 export const createAgencyInputSchema = z
   .object({ name: z.string().trim().min(1).max(100) })
   .strict();
@@ -135,32 +179,49 @@ export function projectClientSnapshot(
   const doc = draftDocumentSchema.parse(input.document);
   if (!input.title.trim())
     throw new DomainError("not_ready", "Proposal title is required");
-  const visible = doc.blocks.filter((b) => b.visible);
-  const meaningful = visible.some((b) =>
-    b.type === "text"
-      ? b.body.trim()
-      : b.lines.some((l) => l.description.trim()),
+  const visible = doc.blocks.filter(
+    (b) =>
+      b.visible &&
+      (b.type === "text"
+        ? !!b.body.trim()
+        : b.type === "program"
+          ? b.items.some((item) => item.title.trim())
+          : b.lines.some((l) => l.description.trim())),
   );
-  if (!meaningful)
+  if (!visible.length)
     throw new DomainError("not_ready", "Visible proposal content is required");
   const blocks = visible.map((b) =>
     b.type === "text"
       ? { id: b.id, type: b.type, heading: b.heading, body: b.body }
-      : {
-          id: b.id,
-          type: b.type,
-          heading: b.heading,
-          lines: b.lines
-            .filter((l) => l.description.trim())
-            .map((l) => ({
-              id: l.id,
-              description: l.description,
-              quantityThousandths: l.quantityThousandths,
-              unitPriceMinor: l.unitPriceMinor,
-              included: l.included,
-            })),
-          summary: calculateEstimate(b.lines),
-        },
+      : b.type === "program"
+        ? {
+            id: b.id,
+            type: b.type,
+            heading: b.heading,
+            items: b.items
+              .filter((item) => item.title.trim())
+              .map((item) => ({
+                id: item.id,
+                time: item.time,
+                title: item.title,
+                description: item.description,
+              })),
+          }
+        : {
+            id: b.id,
+            type: b.type,
+            heading: b.heading,
+            lines: b.lines
+              .filter((l) => l.description.trim())
+              .map((l) => ({
+                id: l.id,
+                description: l.description,
+                quantityThousandths: l.quantityThousandths,
+                unitPriceMinor: l.unitPriceMinor,
+                included: l.included,
+              })),
+            summary: calculateEstimate(b.lines),
+          },
   );
   return structuredClone({
     schemaVersion: 1 as const,
@@ -173,6 +234,7 @@ export function projectClientSnapshot(
     blocks,
   });
 }
+export type ClientSnapshot = ReturnType<typeof projectClientSnapshot>;
 export function applyDraftUpdate(
   current: ProposalRecord,
   expectedRevision: number,
